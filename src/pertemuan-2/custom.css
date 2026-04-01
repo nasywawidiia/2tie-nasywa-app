@@ -1,0 +1,85 @@
+/* Import font modern lucu */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Body */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffd6e0, #d0f4ff);
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Card utama */
+.card {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #ffffffcc;
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Header */
+h1 {
+    text-align: center;
+    color: #ff6b81;
+    background: linear-gradient(135deg, #fdf0f5, #F6BFD3);
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+/* Paragraf */
+p {
+    font-size: 15px;
+    line-height: 1.7;
+    text-align: left;
+}
+
+/* Garis */
+hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, #F6BFD3, #fdf0f5);
+    margin: 15px 0;
+    border-radius: 5px;
+}
+
+/* Greeting */
+small {
+    display: block;
+    font-style: italic;
+    text-align: center;
+    color: #636e72;
+    margin-top: 10px;
+}
+
+/* Highlight nama */
+strong {
+    color: #6c5ce7;
+}
+
+/* Gambar */
+img {
+    display: block;
+    margin: 20px auto;
+    width: 200px;
+    border-radius: 14px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    transition: 0.3s;
+}
+
+/* Hover gambar */
+img:hover {
+    transform: scale(1.05) rotate(1deg);
+}
