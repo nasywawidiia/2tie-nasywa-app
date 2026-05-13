@@ -1,0 +1,183 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+
+import { BsFillExclamationDiamondFill } from "react-icons/bs";
+import { ImSpinner2 } from "react-icons/im";
+
+export default function Login() {
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  const [dataForm, setDataForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (evt) => {
+    const { name, value } = evt.target;
+
+    setDataForm({
+      ...dataForm,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+    setError("");
+    setShowForgotPassword(false);
+
+    axios
+      .post("https://dummyjson.com/user/login", {
+        username: dataForm.email,
+        password: dataForm.password,
+      })
+
+      .then((response) => {
+        if (response.status !== 200) {
+          setError(response.data.message);
+          return;
+        }
+
+        navigate("/");
+      })
+
+      .catch((err) => {
+        if (err.response) {
+          const message =
+            err.response.data.message || "Login gagal";
+
+          setError(message);
+
+          // tampilkan forgot password kalau login gagal
+          setShowForgotPassword(true);
+        } else {
+          setError(err.message || "Unknown error");
+        }
+      })
+
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const errorInfo = error ? (
+    <div className="bg-red-100 border border-red-300 mb-5 p-4 text-sm text-red-700 rounded-lg">
+      <div className="flex items-center">
+        <BsFillExclamationDiamondFill className="text-red-600 me-2 text-lg" />
+        {error}
+      </div>
+    </div>
+  ) : null;
+
+  const loadingInfo = loading ? (
+    <div className="bg-gray-100 border border-gray-300 mb-5 p-4 text-sm rounded-lg flex items-center text-gray-700">
+      <ImSpinner2 className="me-2 animate-spin" />
+      Mohon Tunggu...
+    </div>
+  ) : null;
+
+  return (
+  <div className="min-h-screen bg-[#fffaf5] flex items-center justify-center px-4">
+
+    <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl border border-orange-100">
+      {/* Heading */}
+      <h2 className="text-2xl font-semibold text-gray-700 mb-2 text-center">
+        Welcome Back 👋
+      </h2>
+
+      <p className="text-sm text-gray-500 text-center mb-8">
+        Please sign in to continue
+      </p>
+
+      {/* Error */}
+      {errorInfo}
+
+      {/* Loading */}
+      {loadingInfo}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit}>
+        {/* Email */}
+        <div className="mb-5">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email Address
+          </label>
+
+          <input
+            type="text"
+            id="email"
+            name="email"
+            value={dataForm.email}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        {/* Password */}
+        <div className="mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={dataForm.password}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+            placeholder="********"
+          />
+        </div>
+
+        {/* Forgot Password */}
+        {showForgotPassword && (
+          <div className="flex justify-end mb-6">
+            <Link
+              to="/forgot"
+              className="text-sm text-gray-600 hover:text-orange-500 hover:underline transition duration-200"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+        )}
+
+        {/* Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-orange-500 hover:bg-orange-600 text-black font-semibold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50"
+        >
+          {loading ? (
+            <span className="flex justify-center items-center">
+              <ImSpinner2 className="animate-spin me-2" />
+              Loading...
+            </span>
+          ) : (
+            "Login"
+          )}
+        </button>
+      </form>
+
+      {/* Register */}
+      <p className="text-center text-sm text-gray-600 mt-6">
+        Don’t have an account?{" "}
+        <Link
+          to="/register"
+          className="text-green-600 font-semibold hover:underline"
+        >
+          Register
+        </Link>
+      </p>
+          </div>
+    </div>
+  );
+}
