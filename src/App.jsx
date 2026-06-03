@@ -19,6 +19,10 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 const VisitorPage = lazy(() => import("./pages/VisitorPage"));
 
+const Products = lazy(() => import("./pages/Products"));
+
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+
 /* AUTH */
 const Login = lazy(() => import("./pages/auth/Login"));
 
@@ -36,10 +40,10 @@ function DashboardLayout() {
           <Suspense fallback={<div className="p-10">Loading...</div>}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
-
               <Route path="/orders" element={<Orders />} />
-
               <Route path="/customers" element={<Customers />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/products/:id" element={<ProductDetail />} />
             </Routes>
           </Suspense>
         </div>
@@ -65,6 +69,7 @@ function App() {
         <Route path="/login" element={<Login />} />
 
         <Route path="/register" element={<Register />} />
+
 
         {/* DASHBOARD */}
         <Route path="/*" element={<DashboardLayout />} />
