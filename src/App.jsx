@@ -1,31 +1,25 @@
 import "./assets/tailwind.css";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import { lazy, Suspense } from "react";
 
 /* LAYOUT */
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+import Notes from "./pages/Notes";
 
 /* LAZY PAGES */
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-
 const Orders = lazy(() => import("./pages/Orders"));
-
 const Customers = lazy(() => import("./pages/Customers"));
-
 const NotFound = lazy(() => import("./pages/NotFound"));
-
 const VisitorPage = lazy(() => import("./pages/VisitorPage"));
-
 const Products = lazy(() => import("./pages/Products"));
-
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 
 /* AUTH */
 const Login = lazy(() => import("./pages/auth/Login"));
-
 const Register = lazy(() => import("./pages/auth/Register"));
 
 function DashboardLayout() {
@@ -39,10 +33,11 @@ function DashboardLayout() {
 
           <Suspense fallback={<div className="p-10">Loading...</div>}>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/customers" element={<Customers />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/notes" element={<Notes />} />
               <Route path="/products/:id" element={<ProductDetail />} />
             </Routes>
           </Suspense>
@@ -62,20 +57,23 @@ function App() {
       }
     >
       <Routes>
+
+        {/* ROOT */}
+        <Route path="/" element={<Navigate to="/login" />} />
+
         {/* VISITOR */}
         <Route path="/visitor" element={<VisitorPage />} />
 
         {/* AUTH */}
         <Route path="/login" element={<Login />} />
-
         <Route path="/register" element={<Register />} />
-
 
         {/* DASHBOARD */}
         <Route path="/*" element={<DashboardLayout />} />
 
         {/* NOT FOUND */}
         <Route path="*" element={<NotFound />} />
+
       </Routes>
     </Suspense>
   );

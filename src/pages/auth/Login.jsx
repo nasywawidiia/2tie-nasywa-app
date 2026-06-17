@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { userAPI } from "../../services/userAPI";
 
 import { BsFillExclamationDiamondFill } from "react-icons/bs";
 import { ImSpinner2 } from "react-icons/im";
@@ -29,42 +29,32 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setLoading(true);
-    setError("");
-    setShowForgotPassword(false);
+    try {
+      setLoading(true);
+      setError("");
+      setShowForgotPassword(false);
 
-    axios
-      .post("https://dummyjson.com/user/login", {
-        username: dataForm.email,
-        password: dataForm.password,
-      })
+      const users = await userAPI.fetchUsers();
 
-      .then((response) => {
-        if (response.status !== 200) {
-          setError(response.data.message);
-          return;
-        }
+      const user = users.find(
+        (item) =>
+          item.email === dataForm.email && item.password === dataForm.password,
+      );
 
-        navigate("/");
-      })
+      if (!user) {
+        setError("Email atau Password salah");
+        setShowForgotPassword(true);
+        return;
+      }
 
-      .catch((err) => {
-        if (err.response) {
-          const message =
-            err.response.data.message || "Login gagal";
+      localStorage.setItem("user", JSON.stringify(user));
 
-          setError(message);
-
-          // tampilkan forgot password kalau login gagal
-          setShowForgotPassword(true);
-        } else {
-          setError(err.message || "Unknown error");
-        }
-      })
-
-      .finally(() => {
-        setLoading(false);
-      });
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message || "Login gagal");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const errorInfo = error ? (
@@ -84,100 +74,99 @@ export default function Login() {
   ) : null;
 
   return (
-  <div className="min-h-screen bg-[#fffaf5] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#fffaf5] flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl border border-orange-100">
+        {/* Heading */}
+        <h2 className="text-2xl font-semibold text-gray-700 mb-2 text-center">
+          Welcome Back 👋
+        </h2>
 
-    <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl border border-orange-100">
-      {/* Heading */}
-      <h2 className="text-2xl font-semibold text-gray-700 mb-2 text-center">
-        Welcome Back 👋
-      </h2>
+        <p className="text-sm text-gray-500 text-center mb-8">
+          Please sign in to continue
+        </p>
 
-      <p className="text-sm text-gray-500 text-center mb-8">
-        Please sign in to continue
-      </p>
+        {/* Error */}
+        {errorInfo}
 
-      {/* Error */}
-      {errorInfo}
+        {/* Loading */}
+        {loadingInfo}
 
-      {/* Loading */}
-      {loadingInfo}
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          {/* Email */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit}>
-        {/* Email */}
-        <div className="mb-5">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email Address
-          </label>
-
-          <input
-            type="text"
-            id="email"
-            name="email"
-            value={dataForm.email}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
-            placeholder="you@example.com"
-          />
-        </div>
-
-        {/* Password */}
-        <div className="mb-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Password
-          </label>
-
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={dataForm.password}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
-            placeholder="********"
-          />
-        </div>
-
-        {/* Forgot Password */}
-        {showForgotPassword && (
-          <div className="flex justify-end mb-6">
-            <Link
-              to="/forgot"
-              className="text-sm text-gray-600 hover:text-orange-500 hover:underline transition duration-200"
-            >
-              Forgot your password?
-            </Link>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              value={dataForm.email}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              placeholder="you@example.com"
+            />
           </div>
-        )}
 
-        {/* Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-black font-semibold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50"
-        >
-          {loading ? (
-            <span className="flex justify-center items-center">
-              <ImSpinner2 className="animate-spin me-2" />
-              Loading...
-            </span>
-          ) : (
-            "Login"
+          {/* Password */}
+          <div className="mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={dataForm.password}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              placeholder="********"
+            />
+          </div>
+
+          {/* Forgot Password */}
+          {showForgotPassword && (
+            <div className="flex justify-end mb-6">
+              <Link
+                to="/forgot"
+                className="text-sm text-gray-600 hover:text-orange-500 hover:underline transition duration-200"
+              >
+                Forgot your password?
+              </Link>
+            </div>
           )}
-        </button>
-      </form>
 
-      {/* Register */}
-      <p className="text-center text-sm text-gray-600 mt-6">
-        Don’t have an account?{" "}
-        <Link
-          to="/register"
-          className="text-green-600 font-semibold hover:underline"
-        >
-          Register
-        </Link>
-      </p>
-          </div>
+          {/* Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-black font-semibold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50"
+          >
+            {loading ? (
+              <span className="flex justify-center items-center">
+                <ImSpinner2 className="animate-spin me-2" />
+                Loading...
+              </span>
+            ) : (
+              "Login"
+            )}
+          </button>
+        </form>
+
+        {/* Register */}
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Don’t have an account?{" "}
+          <Link
+            to="/register"
+            className="text-green-600 font-semibold hover:underline"
+          >
+            Register
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
